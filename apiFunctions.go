@@ -100,3 +100,7 @@ func getTodayTopicList() []models.Topic {
 	fmt.Println("Fetched all topics: ", len(topicsList))
 	return topicsList
 }
+
+func getRevisionListByDate() []models.Topic {
+
+}

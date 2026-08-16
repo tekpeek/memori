@@ -68,6 +68,14 @@ func getTodayRevisions(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, result)
 }
 
+func getRevisionByDate(c *gin.Context) {
+	result := getRevisionListByDate()
+	if result == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "error fetching topics"})
+	}
+	c.IndentedJSON(http.StatusOK, result)
+}
+
 type album struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
