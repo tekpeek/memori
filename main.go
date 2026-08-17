@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -69,9 +70,16 @@ func getTodayRevisions(c *gin.Context) {
 }
 
 func getRevisionByDate(c *gin.Context) {
-	result := getRevisionListByDate()
+	date := c.Param("date")
+	parsedDate, error := time.Parse("2006-01-02", date)
+	if error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format. Expected YYYY-MM-DD (e.g., 2026-08-17)"})
+		return
+	}
+	result := getRevisionListByDate(parsedDate)
 	if result == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "error fetching topics"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch revisions from database"})
+		return
 	}
 	c.IndentedJSON(http.StatusOK, result)
 }

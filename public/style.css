@@ -314,6 +314,30 @@ body {
   margin-top: 4px;
 }
 
+.date-picker-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  color-scheme: dark;
+  transition: var(--transition-fast);
+}
+
+.date-input:focus {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 12px var(--accent-purple-glow);
+}
+
 .search-box {
   position: relative;
   display: flex;

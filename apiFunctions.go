@@ -101,6 +101,13 @@ func getTodayTopicList() []models.Topic {
 	return topicsList
 }
 
-func getRevisionListByDate() []models.Topic {
-
+func getRevisionListByDate(date time.Time) []models.Topic {
+	var topicsList []models.Topic
+	result := DB.Find(&topicsList, "NEXT_REVISION_DATE = ?", uniformDate(date))
+	if result.Error != nil {
+		fmt.Println("Error fetching topics for date.", result.Error)
+		return nil
+	}
+	fmt.Println("Fetched all topics: ", len(topicsList))
+	return topicsList
 }

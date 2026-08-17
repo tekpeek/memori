@@ -6,6 +6,7 @@ let activeTab = 'today';
 // DOM Ready initialization
 document.addEventListener('DOMContentLoaded', () => {
   initDateDisplay();
+  initDatePicker();
   refreshData();
 });
 
@@ -16,24 +17,63 @@ function initDateDisplay() {
   document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', options);
 }
 
+// Initialize date picker input to local ISO date (YYYY-MM-DD)
+function initDatePicker() {
+  const dateInput = document.getElementById('revision-date-input');
+  if (dateInput) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    dateInput.value = `${year}-${month}-${day}`;
+  }
+}
+
 // Global data refresh
 async function refreshData() {
-  await Promise.all([fetchTodayRevisions(), fetchAllTopics()]);
+  await Promise.all([fetchRevisionsBySelectedDate(), fetchAllTopics()]);
   updateDashboardStats();
 }
 
-// Fetch Today's Revisions
-async function fetchTodayRevisions() {
+// Fetch Revisions for currently selected date (using GET /revisions/:date or GET /revisions/today)
+async function fetchRevisionsBySelectedDate() {
+  const dateInput = document.getElementById('revision-date-input');
+  const selectedDateStr = dateInput ? dateInput.value : '';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  const isToday = !selectedDateStr || selectedDateStr === todayStr;
+  const endpoint = isToday ? '/revisions/today' : `/revisions/${selectedDateStr}`;
+
   try {
-    const response = await fetch('/revisions/today');
-    if (!response.ok) throw new Error('Failed to fetch today\'s revisions');
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error('Failed to fetch revisions');
     const data = await response.json();
     todayTopics = data || [];
+
+    // Update section title
+    const heading = document.getElementById('revisions-heading');
+    if (heading) {
+      heading.textContent = isToday
+        ? "Today's Revision Schedule"
+        : `Revisions for ${formatDate(selectedDateStr)}`;
+    }
+
     renderTodayTopics();
   } catch (err) {
-    console.error('Error fetching today\'s revisions:', err);
-    showToast('Failed to load today\'s revisions', 'error');
+    console.error('Error fetching revisions:', err);
+    showToast('Failed to load revisions for selected date', 'error');
   }
+}
+
+// Reset date input back to today
+function resetToTodayDate() {
+  initDatePicker();
+  fetchRevisionsBySelectedDate();
 }
 
 // Fetch All Topics
