@@ -55,7 +55,20 @@ func incrementTopic(id uint) {
 		fmt.Println("Error updating data: ", result.Error)
 		return
 	}
+	insertRevisionLog(id, topicDetails.Name, newInterval, "Completed")
 	fmt.Println("Data updated successfully.")
+}
+
+func insertRevisionLog(id uint, topic string, interval int, status string) {
+	fmt.Println("Inserting revision log for topic: ", topic)
+	topicDetails := GetTopicDetails(id)
+	insertData := models.RevisionLog{TopicID: id, Topic: topicDetails, Interval: interval, Status: status}
+	result := DB.Create(&insertData)
+	if result.Error != nil {
+		fmt.Println("Error inserting data into RevisionLog for ", id, result.Error)
+		return
+	}
+	fmt.Println("Revision log inserted.")
 }
 
 func calculateNextInterval(currInterval int) int {
@@ -73,6 +86,10 @@ func calculateNextInterval(currInterval int) int {
 
 func calculateNextRevisionDate(currDate time.Time, currInterval int) (time.Time, int) {
 	nextInterval := calculateNextInterval(currInterval)
+	if uniformDate(currDate).Before(uniformDate(time.Now())) {
+		currDate = uniformDate(time.Now())
+		currInterval = 1
+	}
 	nextRevisionDate := currDate.AddDate(0, 0, nextInterval)
 	nextRevisionDate = uniformDate(nextRevisionDate)
 	fmt.Println("Next Revision Date: ", nextRevisionDate)
@@ -92,7 +109,7 @@ func getTopicList() []models.Topic {
 
 func getTodayTopicList() []models.Topic {
 	var topicsList []models.Topic
-	result := DB.Find(&topicsList, "NEXT_REVISION_DATE = ?", uniformDate(time.Now()))
+	result := DB.Find(&topicsList, "NEXT_REVISION_DATE <= ?", uniformDate(time.Now()))
 	if result.Error != nil {
 		fmt.Println("Error fetching all topics.", result.Error)
 		return nil
