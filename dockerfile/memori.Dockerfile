@@ -1,0 +1,18 @@
+FROM ubuntu:latest as build
+
+WORKDIR /memori
+
+COPY . /memori
+
+USER root
+
+RUN apt-get update && apt-get install-y \
+    golang
+
+RUN go build -o memori .
+
+FROM scratch
+WORKDIR /memori
+COPY --from=build /memori/memori .
+EXPOSE 8080
+ENTRYPOINT ["./memori"]
