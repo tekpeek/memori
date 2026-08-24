@@ -19,6 +19,8 @@ func insertTopic(name string, description string) {
 		fmt.Println("Error creating topic:", result.Error)
 		return
 	}
+	//fmt.Printf("Topic iD is %d\n", insertData.ID)
+	insertRevisionLog(insertData.ID, name, 1, "Created")
 	fmt.Println("New topic inserted.")
 }
 
@@ -30,6 +32,8 @@ func updateTopic(id uint) {
 		fmt.Println("Error updating data: ", result.Error)
 		return
 	}
+	topicDetails := GetTopicDetails(id)
+	insertRevisionLog(id, topicDetails.Name, 1, "Updated")
 	fmt.Println("Data updated successfully.")
 }
 

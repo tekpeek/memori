@@ -276,11 +276,7 @@ function filterTopics() {
   renderAllTopics();
 }
 
-// Apply Form Quick Presets
-function applyPreset(name, description) {
-  document.getElementById('topic-name').value = name;
-  document.getElementById('topic-description').value = description;
-}
+
 
 // Helper: Toast Notifications
 function showToast(message, type = 'success') {
