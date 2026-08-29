@@ -106,12 +106,10 @@ func main() {
 	// Serve static frontend files
 	router.Static("/public", "./public")
 	router.StaticFile("/", "./public/index.html")
-
-	router.GET("/get", getDetails)
-	router.POST("/create", createTopic)
-	router.PUT("/update/:id", initUpdateTopic)
+	router.POST("/topics", createTopic)
+	router.PUT("/topics/:id/reset", initUpdateTopic)
 	router.PUT("/increment/:id", initIncrementTopic)
-	router.GET("/getTopics", getTopics)
+	router.GET("/topics", getTopics)
 	router.GET("/revisions/today", getTodayRevisions)
 	router.GET("/revisions/:date", getRevisionByDate)
 	router.Run("localhost:8080")
