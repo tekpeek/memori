@@ -79,7 +79,7 @@ function resetToTodayDate() {
 // Fetch All Topics
 async function fetchAllTopics() {
   try {
-    const response = await fetch('/getTopics');
+    const response = await fetch('/topics');
     if (!response.ok) throw new Error('Failed to fetch topics');
     const data = await response.json();
     allTopics = data || [];
@@ -118,8 +118,8 @@ function renderAllTopics() {
   const container = document.getElementById('all-topics-container');
   const query = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
 
-  const filtered = allTopics.filter(t => 
-    t.name.toLowerCase().includes(query) || 
+  const filtered = allTopics.filter(t =>
+    t.name.toLowerCase().includes(query) ||
     (t.description && t.description.toLowerCase().includes(query))
   );
 
@@ -179,7 +179,7 @@ function createTopicCardMarkup(topic, isTodayView) {
 function updateDashboardStats() {
   document.getElementById('stat-total-topics').textContent = allTopics.length;
   document.getElementById('stat-due-today').textContent = todayTopics.length;
-  
+
   if (allTopics.length > 0) {
     const avg = (allTopics.reduce((acc, curr) => acc + (curr.current_interval || 1), 0) / allTopics.length).toFixed(1);
     document.getElementById('stat-avg-interval').textContent = `Avg: ${avg}d`;
@@ -203,7 +203,7 @@ async function incrementTopic(id) {
   try {
     const response = await fetch(`/increment/${id}`, { method: 'PUT' });
     if (!response.ok) throw new Error('Failed to increment topic interval');
-    
+
     showToast(`Topic #${id} interval advanced! 🎉`, 'success');
     await refreshData();
   } catch (err) {
@@ -215,7 +215,7 @@ async function incrementTopic(id) {
 // Action: Reset Topic Interval
 async function resetTopic(id) {
   try {
-    const response = await fetch(`/update/${id}`, { method: 'PUT' });
+    const response = await fetch(`/topics/${id}/reset`, { method: 'PUT' });
     if (!response.ok) throw new Error('Failed to reset topic interval');
 
     showToast(`Topic #${id} interval reset to 1 day`, 'success');
@@ -245,7 +245,7 @@ async function handleCreateTopic(event) {
   submitBtn.innerHTML = `<span>Saving...</span>`;
 
   try {
-    const response = await fetch('/create', {
+    const response = await fetch('/topics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description })
@@ -285,9 +285,9 @@ function showToast(message, type = 'success') {
   toast.className = `toast ${type}`;
   toast.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      ${type === 'success' 
-        ? '<polyline points="20 6 9 17 4 12"></polyline>' 
-        : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}
+      ${type === 'success'
+      ? '<polyline points="20 6 9 17 4 12"></polyline>'
+      : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}
     </svg>
     <span>${escapeHtml(message)}</span>
   `;
