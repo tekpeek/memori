@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: memori-server
+    labels:
+      app: memori-server
+spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: memori-server
+    template:
+      metadata:
+        labels:
+          app: memori-server
+      spec:
+        containers:
+        - name: memori-server
+          image: kingaiva/memori:dev
+          env:
+            - name: PORT
+              value: "8000"
+            - name: HOST
+              value: http://postgres:5432
+            - name: DB_USER
+              value: "postgres"
+            - name: PASSWORD
+              value: "your-secret-password"
+            - name: DB_NAME
+              value: "example"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: me-port
