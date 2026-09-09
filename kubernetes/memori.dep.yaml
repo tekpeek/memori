@@ -19,9 +19,9 @@ spec:
           image: kingaiva/memori:dev
           env:
             - name: PORT
-              value: "8000"
+              value: "5432"
             - name: HOST
-              value: http://postgres:5432
+              value: postgres
             - name: DB_USER
               value: "postgres"
             - name: PASSWORD
